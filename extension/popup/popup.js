@@ -8,6 +8,7 @@ let appState = null;
 
 // 页面加载
 document.addEventListener('DOMContentLoaded', async () => {
+  await checkActivation();
   await loadCurrentTab();
   await loadState();
   setupEventListeners();
@@ -16,6 +17,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 每秒更新一次
   setInterval(loadState, 1000);
 });
+
+// 检查激活状态
+async function checkActivation() {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: 'checkActivation'
+    });
+    
+    if (response && !response.activated) {
+      // 未激活，跳转到激活页面
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('activation/activation.html')
+      });
+      window.close();
+    }
+  } catch (error) {
+    console.error('检查激活状态失败:', error);
+  }
+}
 
 // 加载当前标签页
 async function loadCurrentTab() {

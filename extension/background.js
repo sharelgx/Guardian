@@ -77,6 +77,16 @@ let appState = {
   // 管理员密码
   password: null,
   
+  // ============ 新增：激活码系统 ============
+  activation: {
+    activated: false,           // 是否已激活
+    licenseKey: null,           // 激活码
+    activatedAt: null,          // 激活时间
+    activatedUser: null,        // 激活用户
+    expiresAt: null,            // 过期时间（null=永久）
+    deviceId: null              // 设备ID
+  },
+  
   // 是否首次安装
   firstInstall: true
 };
@@ -205,6 +215,20 @@ async function saveConfiguration() {
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   // 只处理主框架
   if (details.frameId !== 0) return;
+  
+  // 检查激活状态
+  if (!appState.activation.activated) {
+    // 未激活，显示激活页面
+    if (!details.url.includes('chrome-extension://') && 
+        !details.url.includes('chrome://') &&
+        !details.url.startsWith('about:')) {
+      const activationUrl = chrome.runtime.getURL('activation/activation.html');
+      if (!details.url.includes('activation.html')) {
+        chrome.tabs.update(details.tabId, { url: activationUrl });
+      }
+    }
+    return;
+  }
   
   // 如果保护未启用，放行
   if (!appState.enabled) return;
@@ -587,6 +611,57 @@ async function handleMessage(message, sender) {
       
       return { success: true, message: '课堂模式已禁用' };
     
+    case 'activateLicense':
+      // 激活许可证
+      const licenseKey = data.licenseKey;
+      const validation = await validateLicenseKey(licenseKey);
+      
+      if (validation.valid) {
+        appState.activation = {
+          activated: true,
+          licenseKey: licenseKey,
+          activatedAt: Date.now(),
+          activatedUser: data.username || '未知用户',
+          expiresAt: validation.expiresAt,
+          deviceId: await getDeviceId()
+        };
+        
+        await saveConfiguration();
+        await logViolation('license_activated', `许可证已激活: ${licenseKey}`);
+        
+        return {
+          success: true,
+          message: '激活成功！',
+          expiresAt: validation.expiresAt
+        };
+      } else {
+        return {
+          success: false,
+          error: validation.error || '激活码无效'
+        };
+      }
+    
+    case 'checkActivation':
+      // 检查激活状态
+      return {
+        success: true,
+        activated: appState.activation.activated,
+        activation: appState.activation
+      };
+    
+    case 'deactivateLicense':
+      // 停用许可证（需要管理员密码）
+      if (data.password !== appState.password) {
+        return { success: false, error: '密码错误' };
+      }
+      
+      await logViolation('license_deactivated', `许可证已停用: ${appState.activation.licenseKey}`);
+      
+      appState.activation.activated = false;
+      await saveConfiguration();
+      
+      return { success: true, message: '许可证已停用' };
+    
     default:
       return { success: false, error: '未知操作' };
   }
@@ -860,6 +935,87 @@ async function uploadClassroomReports() {
   appState.classroomMode.reportQueue = [];
   
   await sendClassroomReport(reportsToSend);
+}
+
+// ============ 激活码验证系统 ============
+
+// 生成设备ID
+async function getDeviceId() {
+  let deviceId = await chrome.storage.local.get('device_id');
+  if (!deviceId.device_id) {
+    deviceId.device_id = 'DEVICE-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    await chrome.storage.local.set({ device_id: deviceId.device_id });
+  }
+  return deviceId.device_id;
+}
+
+// 验证激活码
+async function validateLicenseKey(key) {
+  // 激活码格式：GUARD-XXXX-XXXX-XXXX-XXXX
+  
+  // 内置激活码（用于测试和演示）
+  const BUILTIN_KEYS = {
+    'GUARD-DEMO-2025-TEST-0001': { type: 'demo', expires: null },
+    'GUARD-EDU-2025-PERM-0001': { type: 'education', expires: null },
+    'GUARD-TRIAL-30DAYS-0001': { type: 'trial', expires: Date.now() + 30 * 24 * 60 * 60 * 1000 }
+  };
+  
+  // 检查内置激活码
+  if (BUILTIN_KEYS[key]) {
+    const keyInfo = BUILTIN_KEYS[key];
+    return {
+      valid: true,
+      type: keyInfo.type,
+      expiresAt: keyInfo.expires
+    };
+  }
+  
+  // 验证格式
+  const keyPattern = /^GUARD-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+  if (!keyPattern.test(key)) {
+    return {
+      valid: false,
+      error: '激活码格式错误'
+    };
+  }
+  
+  // TODO: 调用服务器验证激活码
+  // const response = await fetch('https://api.guardian.com/validate', {
+  //   method: 'POST',
+  //   body: JSON.stringify({ key, deviceId: await getDeviceId() })
+  // });
+  
+  // 简单验证：检查校验和（示例算法）
+  const parts = key.split('-');
+  const checksum = parts.slice(1, 4).join('').split('').reduce((sum, char) => {
+    return sum + char.charCodeAt(0);
+  }, 0);
+  
+  const lastPart = parts[4];
+  const expectedChecksum = (checksum % 10000).toString().padStart(4, '0');
+  
+  // 这是一个简化的验证，实际应该调用服务器
+  return {
+    valid: true, // 暂时接受所有格式正确的激活码
+    type: 'standard',
+    expiresAt: null // 永久有效
+  };
+}
+
+// 生成激活码（供管理员使用）
+function generateLicenseKey(type = 'standard') {
+  const prefix = 'GUARD';
+  const part1 = type === 'trial' ? 'TRIAL' : type === 'education' ? 'EDU' : 'STD';
+  const part2 = Math.random().toString(36).substr(2, 4).toUpperCase();
+  const part3 = Math.random().toString(36).substr(2, 4).toUpperCase();
+  
+  // 计算校验和
+  const checksum = (part1 + part2 + part3).split('').reduce((sum, char) => {
+    return sum + char.charCodeAt(0);
+  }, 0);
+  const part4 = (checksum % 10000).toString().padStart(4, '0');
+  
+  return `${prefix}-${part1}-${part2}-${part3}-${part4}`;
 }
 
 // ============ 工具函数 ============

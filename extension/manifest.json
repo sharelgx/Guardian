@@ -39,7 +39,7 @@
   
   "web_accessible_resources": [
     {
-      "resources": ["blocked/blocked.html"],
+      "resources": ["blocked/blocked.html", "activation/activation.html"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardian 激活码生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+    }
+    .generator-section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    .result {
+      background: #e8f5e9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+    .result.show {
+      display: block;
+    }
+    .license-key {
+      font-size: 24px;
+      font-family: 'Courier New', monospace;
+      color: #667eea;
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      margin: 15px 0;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+    .btn-copy {
+      background: #27ae60;
+      margin-top: 10px;
+    }
+    .btn-copy:hover {
+      background: #229954;
+    }
+    .batch-result {
+      max-height: 400px;
+      overflow-y: auto;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .batch-key {
+      font-family: monospace;
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ Guardian 激活码生成器</h1>
+    <p class="subtitle">为Guardian浏览器保护插件生成激活码</p>
+
+    <div class="generator-section">
+      <h3>生成激活码</h3>
+      
+      <div class="form-group">
+        <label>激活码类型：</label>
+        <select id="keyType">
+          <option value="standard">标准版（永久）</option>
+          <option value="education">教育版（永久）</option>
+          <option value="trial">试用版（30天）</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>生成数量：</label>
+        <input type="number" id="quantity" value="1" min="1" max="100">
+      </div>
+
+      <button onclick="generateKeys()">生成激活码</button>
+    </div>
+
+    <div id="result" class="result">
+      <h3>✅ 生成成功</h3>
+      <div id="licenseKey" class="license-key"></div>
+      <button class="btn-copy" onclick="copyKey()">复制激活码</button>
+      <div id="batchResult" class="batch-result" style="display: none;"></div>
+    </div>
+
+    <div class="generator-section">
+      <h3>📋 内置演示激活码</h3>
+      <div class="batch-result">
+        <div class="batch-key">GUARD-DEMO-2025-TEST-0001 （演示版，永久有效）</div>
+        <div class="batch-key">GUARD-EDU-2025-PERM-0001 （教育版，永久有效）</div>
+        <div class="batch-key">GUARD-TRIAL-30DAYS-0001 （试用版，30天）</div>
+      </div>
+      <p style="margin-top: 15px; color: #7f8c8d; font-size: 14px;">
+        这些激活码已内置在插件中，可直接使用。
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function generateLicenseKey(type = 'standard') {
+      const prefix = 'GUARD';
+      const part1 = type === 'trial' ? 'TRIAL' : type === 'education' ? 'EDU' : 'STD';
+      const part2 = Math.random().toString(36).substr(2, 4).toUpperCase().padEnd(4, '0');
+      const part3 = Math.random().toString(36).substr(2, 4).toUpperCase().padEnd(4, '0');
+      
+      // 计算校验和
+      const checksum = (part1 + part2 + part3).split('').reduce((sum, char) => {
+        return sum + char.charCodeAt(0);
+      }, 0);
+      const part4 = (checksum % 10000).toString().padStart(4, '0');
+      
+      return `${prefix}-${part1}-${part2}-${part3}-${part4}`;
+    }
+
+    function generateKeys() {
+      const type = document.getElementById('keyType').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const resultDiv = document.getElementById('result');
+      const keyDiv = document.getElementById('licenseKey');
+      const batchDiv = document.getElementById('batchResult');
+
+      if (quantity === 1) {
+        const key = generateLicenseKey(type);
+        keyDiv.textContent = key;
+        batchDiv.style.display = 'none';
+      } else {
+        const keys = [];
+        for (let i = 0; i < quantity; i++) {
+          keys.push(generateLicenseKey(type));
+        }
+        keyDiv.textContent = `已生成 ${quantity} 个激活码`;
+        batchDiv.innerHTML = keys.map(k => `<div class="batch-key">${k}</div>`).join('');
+        batchDiv.style.display = 'block';
+      }
+
+      resultDiv.classList.add('show');
+    }
+
+    function copyKey() {
+      const keyText = document.getElementById('licenseKey').textContent;
+      const batchKeys = document.querySelectorAll('.batch-key');
+      
+      let textToCopy = keyText;
+      if (batchKeys.length > 0) {
+        textToCopy = Array.from(batchKeys).map(el => el.textContent).join('\n');
+      }
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const btn = event.target;
+        btn.textContent = '✅ 已复制';
+        setTimeout(() => {
+          btn.textContent = '复制激活码';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
+
