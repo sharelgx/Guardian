@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网站已被拦截 - Guardian</title>
+  <link rel="stylesheet" href="blocked.css">
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🛡️</div>
+    
+    <h1>此网站已被保护</h1>
+    
+    <p class="message" id="reason">该网站暂时无法访问</p>
+    
+    <div class="blocked-url">
+      <strong>被拦截网站：</strong>
+      <span id="blockedUrl">加载中...</span>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-primary" id="goBack">返回上一页</button>
+      <button class="btn btn-secondary" id="requestPass">申请临时访问</button>
+    </div>
+    
+    <div class="info">
+      <h3>💡 建议</h3>
+      <ul>
+        <li>如果需要访问此网站，请联系管理员</li>
+        <li>您可以在管理后台查看拦截记录</li>
+        <li>专注学习，合理安排上网时间</li>
+      </ul>
+    </div>
+    
+    <div class="footer">
+      <a href="#" id="openAdmin">打开管理后台</a> |
+      <a href="#" id="disableProtection">暂时禁用保护</a>
+    </div>
+  </div>
+
+  <!-- 密码弹窗 -->
+  <div class="modal" id="passwordModal" style="display: none;">
+    <div class="modal-content">
+      <h3>输入管理员密码</h3>
+      <input type="password" id="passwordInput" placeholder="请输入密码">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelPassword">取消</button>
+        <button class="btn btn-primary" id="confirmPassword">确认</button>
+      </div>
+      <p class="error-message" id="errorMessage"></p>
+    </div>
+  </div>
+
+  <script src="blocked.js"></script>
+</body>
+</html>
+

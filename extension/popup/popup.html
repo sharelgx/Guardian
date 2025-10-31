@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardian 保护助手</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <div class="logo">
+        <img src="../icons/icon48.png" alt="Guardian" width="32" height="32">
+        <h1>Guardian</h1>
+      </div>
+      <div class="status" id="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">未启用</span>
+      </div>
+    </div>
+
+    <!-- 快速开关 -->
+    <div class="quick-toggle">
+      <label class="switch">
+        <input type="checkbox" id="enableToggle">
+        <span class="slider"></span>
+      </label>
+      <span>启用保护</span>
+    </div>
+
+    <!-- 统计信息 -->
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="todayBlocked">0</div>
+        <div class="stat-label">今日拦截</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="todayAllowed">0</div>
+        <div class="stat-label">今日访问</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="usedTime">0分钟</div>
+        <div class="stat-label">已用时长</div>
+      </div>
+    </div>
+
+    <!-- 当前网站信息 -->
+    <div class="current-site" id="currentSite">
+      <div class="site-info">
+        <span class="site-icon">🌐</span>
+        <span class="site-domain" id="siteDomain">-</span>
+      </div>
+      <div class="site-status" id="siteStatus">
+        <span class="badge badge-success">允许访问</span>
+      </div>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="quick-actions">
+      <button class="btn btn-secondary" id="quickBlock">
+        <span>🚫</span>
+        加入黑名单
+      </button>
+      <button class="btn btn-secondary" id="quickAllow">
+        <span>✅</span>
+        加入白名单
+      </button>
+    </div>
+
+    <!-- 临时通行证 -->
+    <div class="temp-pass" id="tempPassSection" style="display: none;">
+      <div class="temp-pass-info">
+        <span>⏰</span>
+        <span id="tempPassInfo">临时通行证已激活</span>
+      </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="footer">
+      <button class="btn btn-primary" id="openAdmin">
+        ⚙️ 管理后台
+      </button>
+      <button class="btn btn-secondary" id="openSettings">
+        设置
+      </button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

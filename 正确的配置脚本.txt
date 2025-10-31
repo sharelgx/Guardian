@@ -1,0 +1,87 @@
+==========================================
+✅ Service Worker 已启动！
+现在用这个脚本配置
+==========================================
+
+📍 在 Service Worker 控制台运行这个：
+==========================================
+
+chrome.storage.local.set({
+  guardian_config: {
+    enabled: true,
+    mode: 'blacklist',
+    blacklist: ['bilibili.com', 'www.bilibili.com'],
+    whitelist: [],
+    timeControl: { enabled: false, schedules: [] },
+    dailyLimit: { 
+      enabled: false, 
+      maxMinutes: 120, 
+      usedMinutes: 0,
+      lastResetDate: new Date().toISOString().split('T')[0]
+    },
+    tempPass: { active: false, domain: null, expiresAt: null },
+    stats: { 
+      todayBlocked: 0, 
+      totalBlocked: 0, 
+      todayAllowed: 0,
+      lastResetDate: new Date().toISOString().split('T')[0]
+    },
+    violationLogs: [],
+    userInfo: { 
+      userId: 'student001', 
+      username: '张三',
+      bindTime: Date.now()
+    },
+    password: '1234',
+    firstInstall: false
+  }
+}, () => {
+  console.log('✅ 配置成功！');
+  console.log('现在访问 bilibili.com 试试');
+});
+
+
+==========================================
+按回车后应该看到：
+==========================================
+
+✅ 配置成功！
+现在访问 bilibili.com 试试
+
+
+==========================================
+然后测试：
+==========================================
+
+1. 打开新标签页
+2. 访问 www.bilibili.com
+3. 应该看到拦截页面！
+
+
+==========================================
+验证配置：
+==========================================
+
+运行这个查看配置是否保存成功：
+
+chrome.storage.local.get('guardian_config', (data) => {
+  console.log('当前配置:', data.guardian_config);
+  console.log('保护状态:', data.guardian_config?.enabled);
+  console.log('黑名单:', data.guardian_config?.blacklist);
+});
+
+
+==========================================
+如果还是不拦截：
+==========================================
+
+1. 确认 Service Worker 控制台显示：
+   ✅ 配置成功！
+
+2. 确认配置验证显示：
+   保护状态: true
+   黑名单: ['bilibili.com', 'www.bilibili.com']
+
+3. 新打开标签页访问B站（不要刷新旧页面）
+
+4. 把控制台的所有输出发给我

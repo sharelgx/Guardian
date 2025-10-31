@@ -1,0 +1,11 @@
+由于无法在命令行创建PNG图片，请使用以下任一方式：
+
+方式1：使用在线工具生成（推荐）
+1. 访问：https://www.favicon-generator.org/
+2. 上传任意图片或使用emoji
+3. 生成并下载 icon16.png, icon48.png, icon128.png
+4. 放到这个文件夹：
+   /home/sharelgx/MetaSeekOJdev/guardian-browser-extension/extension/icons/
+
+方式2：临时解决（让插件先能用）
+删除manifest.json中的图标引用，或使用下面的简化版manifest.json

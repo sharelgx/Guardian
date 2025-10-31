@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardian 管理后台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>🛡️ Guardian</h1>
+      <p>浏览器保护管理后台</p>
+    </div>
+    
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span>
+        <span>仪表盘</span>
+      </a>
+      <a href="#" class="nav-item" data-page="blacklist">
+        <span class="icon">🚫</span>
+        <span>黑名单</span>
+      </a>
+      <a href="#" class="nav-item" data-page="whitelist">
+        <span class="icon">✅</span>
+        <span>白名单</span>
+      </a>
+      <a href="#" class="nav-item" data-page="logs">
+        <span class="icon">📝</span>
+        <span>访问日志</span>
+      </a>
+      <a href="#" class="nav-item" data-page="violations">
+        <span class="icon">⚠️</span>
+        <span>违规记录</span>
+      </a>
+      <a href="#" class="nav-item" data-page="schedule">
+        <span class="icon">⏰</span>
+        <span>时间管理</span>
+      </a>
+      <a href="#" class="nav-item" data-page="settings">
+        <span class="icon">⚙️</span>
+        <span>系统设置</span>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <p>Guardian v1.0.0</p>
+      <button id="refreshBtn" class="btn-small">🔄 刷新数据</button>
+    </div>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 页面容器 -->
+    <div id="pageContainer"></div>
+  </main>
+
+  <!-- Toast通知 -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
+

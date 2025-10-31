@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Guardian - 浏览器保护助手",
+  "version": "1.0.0",
+  "description": "智能网址过滤和上网监控工具",
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Guardian 浏览器保护"
+  },
+  
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  
+  "permissions": [
+    "tabs",
+    "storage",
+    "webNavigation",
+    "alarms",
+    "notifications",
+    "management"
+  ],
+  
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  
+  "options_page": "options/options.html",
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked/blocked.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
+

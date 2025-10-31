@@ -1,0 +1,90 @@
+===============================================
+Guardian 浏览器保护插件 - 安装步骤
+===============================================
+
+📍 第一步：启动管理后台
+===============================================
+
+打开终端，复制粘贴这个命令：
+
+cd /home/sharelgx/MetaSeekOJdev/guardian-browser-extension
+./start.sh
+
+看到 "✅ 管理后台已启动: http://localhost:8888" 就成功了！
+
+如果 ./start.sh 不行，用这个：
+
+cd /home/sharelgx/MetaSeekOJdev/guardian-browser-extension/admin-panel
+python3 -m http.server 8888
+
+
+📍 第二步：安装浏览器插件
+===============================================
+
+① 打开 Chrome 浏览器
+
+② 在地址栏输入：chrome://extensions/
+   然后按回车键
+
+③ 在右上角找到「开发者模式」
+   打开这个开关（让它变成蓝色）
+
+④ 点击左上角「加载已解压的扩展程序」按钮
+
+⑤ 在弹出的文件选择窗口中，复制粘贴这个路径：
+
+/home/sharelgx/MetaSeekOJdev/guardian-browser-extension/extension/
+
+   注意：是 extension/ 不是 admin-panel/extension/
+
+⑥ 点击「选择」或「打开」
+
+⑦ 成功！浏览器工具栏会出现 Guardian 图标
+
+
+📍 第三步：开始使用
+===============================================
+
+① 打开浏览器，访问：http://localhost:8888
+
+② 左侧点击「黑名单」
+
+③ 输入要拦截的网站，如：bilibili.com
+
+④ 点击「添加到黑名单」
+
+⑤ 左侧点击「仪表盘」，打开「启用保护」开关
+
+⑥ 测试：访问 www.bilibili.com，会看到拦截页面！
+
+
+===============================================
+常见问题
+===============================================
+
+Q: 找不到 extension/ 文件夹？
+A: 确认路径：
+   /home/sharelgx/MetaSeekOJdev/guardian-browser-extension/extension/
+
+Q: 管理后台打不开？
+A: 确认服务器运行：
+   cd /home/sharelgx/MetaSeekOJdev/guardian-browser-extension
+   ./start.sh
+
+Q: 插件安装失败？
+A: 确认：
+   1. 已开启「开发者模式」
+   2. 选择了正确的 extension/ 文件夹
+   3. 文件夹里有 manifest.json 文件
+
+Q: 拦截不生效？
+A: 确认：
+   1. 保护开关已打开
+   2. 域名格式正确（如：bilibili.com）
+   3. 不要加 http:// 或 https://
+
+
+===============================================
+需要帮助？随时问我！
+===============================================
+
